@@ -1,22 +1,28 @@
 import React, { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { FaFacebook } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import AlertDialog from "../../components/reusables/AlertDialog";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [alert, setAlert] = useState(null);
+    const [showPassword, setShowPassword] = useState(false);
+
+    const navigate = useNavigate();
 
     const leftRef = useRef(null);
     const rightRef = useRef(null);
     const formElementsRef = useRef([]);
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
-
-        console.log("Submitting:", { email: username, password }); // log BEFORE fetch
+        setLoading(true);
 
         try {
             const res = await fetch("/login", {
@@ -30,50 +36,66 @@ export default function Login() {
                 body: JSON.stringify({ email: username, password }),
             });
 
-            if (!res.ok) throw new Error("Login failed");
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Login failed");
+            }
 
             const data = await res.json();
-            localStorage.setItem("token", data.token); // store JWT
-            console.log("Logged in:", data);
+            localStorage.setItem("token", data.token);
 
-            // Optionally redirect
-            // window.location.href = "/";
+            // Show success state
+            setSuccess(true);
+
+            // Navigate after a short delay
+            setTimeout(() => {
+                navigate("/feed");
+            }, 1000);
         } catch (err) {
-            console.error(err);
-            setError(err.message);
+            setAlert({ type: "error", message: err.message });
+            setLoading(false);
         }
     };
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            navigate("/feed");
+        }
+
+        // Only one GSAP context, animate after refs exist
         const ctx = gsap.context(() => {
             const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-            // Left image slides in
-            tl.from(leftRef.current, {
-                x: -100,
-                opacity: 0,
-                duration: 0.8,
-            });
-
-            // Right container slides in (without animating children)
-            tl.from(
-                rightRef.current,
-                {
-                    x: 100,
+            if (leftRef.current && rightRef.current) {
+                tl.from(leftRef.current, {
+                    x: -100,
                     opacity: 0,
                     duration: 0.8,
-                },
-                "-=0.5"
-            );
+                });
+                tl.from(
+                    rightRef.current,
+                    { x: 100, opacity: 0, duration: 0.8 },
+                    "-=0.5"
+                );
+            }
         });
 
         return () => ctx.revert();
-    }, []);
+    }, [navigate]);
+
     return (
         <div className="min-h-screen flex flex-col bg-black">
-            {/* Main content */}
+            {alert && (
+                <AlertDialog
+                    type={alert.type}
+                    message={alert.message}
+                    onClose={() => setAlert(null)}
+                />
+            )}
+
             <div className="flex flex-col md:flex-row gap-3 items-center justify-center flex-1 w-full max-w-6xl mx-auto">
-                {/* Left Side (Mockup images) */}
+                {/* Left Side */}
                 <div
                     ref={leftRef}
                     className="hidden md:flex w-1/2 justify-center relative"
@@ -90,7 +112,7 @@ export default function Login() {
                     </div>
                 </div>
 
-                {/* Right Side (Login form box) */}
+                {/* Right Side */}
                 <div
                     ref={rightRef}
                     className="w-full md:w-1/2 max-w-sm bg-black p-6 rounded-lg text-white shadow-lg"
@@ -102,12 +124,8 @@ export default function Login() {
                         className="mx-auto mb-6 w-32 h-auto"
                     />
 
-                    {/* Form */}
                     <form className="space-y-3" onSubmit={handleSubmit}>
-                        <div
-                            ref={(el) => el && formElementsRef.current.push(el)}
-                            className="relative"
-                        >
+                        <div className="relative">
                             <input
                                 type="text"
                                 value={username}
@@ -115,6 +133,7 @@ export default function Login() {
                                 className="peer w-full px-3 pt-4 pb-2 text-sm border rounded bg-zinc-900 border-zinc-700 
                                    focus:outline-none focus:ring-0 focus:border-gray-500 placeholder-transparent"
                                 placeholder="Username or email"
+                                disabled={loading}
                             />
                             <label
                                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm 
@@ -127,35 +146,60 @@ export default function Login() {
                                 Phone number, username, or email
                             </label>
                         </div>
-                        <div
-                            ref={(el) => el && formElementsRef.current.push(el)}
-                            className="relative"
-                        >
+
+                        <div className="relative">
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="peer w-full px-3 pt-4 pb-2 text-sm border rounded bg-zinc-900 border-zinc-700 
-                                   focus:outline-none focus:ring-0 focus:border-gray-500 placeholder-transparent"
+           focus:outline-none focus:ring-0 focus:border-gray-500 placeholder-transparent pr-10"
                                 placeholder="Password"
+                                disabled={loading || success}
                             />
                             <label
                                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm 
-                                   transition-all duration-200 
-                                   peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-500 
-                                   peer-focus:top-2 peer-focus:text-xs peer-focus:text-gray-300 
-                                   peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-xs 
-                                   pointer-events-none"
+           transition-all duration-200 
+           peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-500 
+           peer-focus:top-2 peer-focus:text-xs peer-focus:text-gray-300 
+           peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-xs 
+           pointer-events-none"
                             >
                                 Password
                             </label>
+
+                            {/* Show icon only if there's text in the password field */}
+                            {password && (
+                                <div
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer select-none"
+                                    onClick={() =>
+                                        setShowPassword(!showPassword)
+                                    }
+                                >
+                                    {showPassword ? (
+                                        <EyeOff size={18} />
+                                    ) : (
+                                        <Eye size={18} />
+                                    )}
+                                </div>
+                            )}
                         </div>
                         <button
-                            ref={(el) => el && formElementsRef.current.push(el)}
                             type="submit"
-                            className="w-full bg-blue-600 text-white py-2 rounded-lg cursor-pointer text-sm font-semibold hover:bg-blue-700 transition"
+                            className={`w-full py-2 rounded-lg text-sm font-semibold transition flex justify-center items-center ${
+                                loading || success
+                                    ? "bg-gray-600 cursor-not-allowed"
+                                    : "bg-blue-600 hover:bg-blue-700"
+                            }`}
+                            disabled={loading || success}
                         >
-                            Log In
+                            {loading ? (
+                                <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                            ) : success ? (
+                                "Logged In Successful"
+                            ) : (
+                                "Log In"
+                            )}
                         </button>
                     </form>
 

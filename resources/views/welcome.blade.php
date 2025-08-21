@@ -7,7 +7,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="icon" href="images/instagram-icon.png">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    @viteReactRefresh
     @vite('resources/js/main.jsx')
     <title>Instagram • Clone</title>
 </head>

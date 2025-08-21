@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 import { FaFacebookSquare, FaLock, FaUser } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+import { Eye, EyeOff, Lock } from "lucide-react";
 
 export default function Signup() {
     const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ export default function Signup() {
 
     const cardRef = useRef(null); // main signup card
     const footerRef = useRef(null); // bottom "Have an account?" card
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
         setFormData((s) => ({ ...s, [e.target.name]: e.target.value }));
@@ -118,13 +120,25 @@ export default function Signup() {
                     <div className="relative">
                         <FaLock className="absolute left-3 top-3 text-gray-400" />
                         <input
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
                             placeholder="Password"
-                            className="w-full pl-10 pr-3 py-2 text-sm border rounded bg-zinc-900 border-zinc-700 focus:outline-none focus:border-gray-500"
+                            className="w-full pl-10 pr-10 py-2 text-sm border rounded bg-zinc-900 border-zinc-700 focus:outline-none focus:border-gray-500"
                         />
+                        {formData.password && (
+                            <div
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? (
+                                    <EyeOff size={18} />
+                                ) : (
+                                    <Eye size={18} />
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     <div className="relative">
