@@ -1,52 +1,66 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "./Sidebar"; // make sure the path is correct
+import Sidebar from "./Sidebar";
+import Stories from "./Stories";
+import Rightbar from "./Rightbar";
+import Posts from "./Posts";
+import SearchDialog from "../../components/navigations/SearchDialog";
 
+// Feed.jsx
 export default function Feed() {
     const navigate = useNavigate();
+    const [showSearch, setShowSearch] = useState(false);
 
     useEffect(() => {
-        // Check if user is logged in (has token)
         const token = localStorage.getItem("token");
-        if (!token) {
-            navigate("/"); // Redirect to login if not logged in
-        }
+        if (!token) navigate("/");
     }, [navigate]);
-
-    const handleLogout = () => {
-        localStorage.removeItem("token"); // Clear token
-        navigate("/"); // Redirect to login
-    };
 
     return (
         <div className="flex min-h-screen bg-black text-white">
-            {/* Sidebar */}
-            <Sidebar />
+            <Sidebar showSearch={showSearch} setShowSearch={setShowSearch} />
 
-            {/* Main Feed Area */}
-            <main className="flex-1 p-6 flex flex-col items-center justify-start">
-                <h1 className="text-3xl font-bold mb-4">
-                    Welcome to Instagram Feed!
-                </h1>
-                <p className="text-gray-300 mb-6">
-                    This is a placeholder for posts, stories, and feeds.
-                </p>
-
-                {/* Logout Button */}
-                <button
-                    onClick={handleLogout}
-                    className="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                >
-                    Logout
-                </button>
-
-                {/* Example placeholder for posts */}
-                <div className="mt-8 w-full max-w-3xl space-y-4">
-                    <div className="bg-zinc-900 p-4 rounded">Post 1</div>
-                    <div className="bg-zinc-900 p-4 rounded">Post 2</div>
-                    <div className="bg-zinc-900 p-4 rounded">Post 3</div>
+            <div
+                className="flex flex-1 justify-center gap-10 w-full
+          max-[765px]:ml-0
+          min-[766px]:ml-20
+          min-[1260px]:ml-64
+          transition-all duration-300"
+            >
+                <main className="flex-1 w-full max-w-2xl p-4 sm:p-6">
+                    <div className="mb-10">
+                        {" "}
+                        <Stories />
+                    </div>
+                    <Posts />
+                </main>
+                <div className="w-80 hidden lg:block">
+                    <Rightbar />
                 </div>
-            </main>
+            </div>
+
+            {/* Render SearchDialog at root */}
+            <SearchDialog
+                open={showSearch}
+                onClose={() => setShowSearch(false)}
+                results={[
+                    {
+                        img: "https://i.pravatar.cc/100?img=12",
+                        username: "el0n_rev_musk",
+                        name: "Elon Musk • Following",
+                    },
+                    {
+                        img: "https://i.pravatar.cc/100?img=13",
+                        username: "tech_guru",
+                        name: "Tech Guru • Suggested",
+                    },
+                    {
+                        img: "https://i.pravatar.cc/100?img=14",
+                        username: "code_master",
+                        name: "Code Master • Following",
+                    },
+                ]}
+            />
         </div>
     );
 }

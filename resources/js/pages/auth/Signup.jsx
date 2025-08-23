@@ -58,11 +58,15 @@ export default function Signup() {
             });
 
             // Footer animation
-            tl.from(footerRef.current, {
-                autoAlpha: 0,
-                y: 16,
-                duration: 0.4,
-            });
+            tl.from(
+                footerRef.current,
+                {
+                    autoAlpha: 0,
+                    y: 16,
+                    duration: 0.4,
+                },
+                "-=0.3"
+            );
         });
 
         return () => ctx.revert();
