@@ -45,9 +45,9 @@ export default function Posts() {
                 <div
                     key={post.id}
                     className="
-                bg-black border border-gray-800 rounded-lg
-                w-full max-w-[500px] sm:mx-auto
-            "
+    bg-black border border-gray-800 rounded-lg
+    w-full sm:max-w-[500px] mx-0 sm:mx-auto
+  "
                 >
                     {/* Header */}
                     <div className="flex items-center justify-between p-3">

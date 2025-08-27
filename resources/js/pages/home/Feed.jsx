@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from "react";
+// Feed.jsx
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "./Sidebar";
+import Sidebar from "../../components/navigations/Sidebar";
 import Stories from "./Stories";
 import Rightbar from "./Rightbar";
 import Posts from "./Posts";
-import SearchDialog from "../../components/navigations/SearchDialog";
 
-// Feed.jsx
 export default function Feed() {
     const navigate = useNavigate();
-    const [showSearch, setShowSearch] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -18,7 +16,7 @@ export default function Feed() {
 
     return (
         <div className="flex min-h-screen bg-black text-white">
-            <Sidebar showSearch={showSearch} setShowSearch={setShowSearch} />
+            <Sidebar />
 
             <div
                 className="flex flex-1 justify-center gap-10 w-full
@@ -27,9 +25,8 @@ export default function Feed() {
           min-[1260px]:ml-64
           transition-all duration-300"
             >
-                <main className="flex-1 w-full max-w-2xl p-4 sm:p-6">
+                <main className="flex-1 w-full p-4 sm:p-6 sm:max-w-2xl">
                     <div className="mb-10">
-                        {" "}
                         <Stories />
                     </div>
                     <Posts />
@@ -38,29 +35,6 @@ export default function Feed() {
                     <Rightbar />
                 </div>
             </div>
-
-            {/* Render SearchDialog at root */}
-            <SearchDialog
-                open={showSearch}
-                onClose={() => setShowSearch(false)}
-                results={[
-                    {
-                        img: "https://i.pravatar.cc/100?img=12",
-                        username: "el0n_rev_musk",
-                        name: "Elon Musk • Following",
-                    },
-                    {
-                        img: "https://i.pravatar.cc/100?img=13",
-                        username: "tech_guru",
-                        name: "Tech Guru • Suggested",
-                    },
-                    {
-                        img: "https://i.pravatar.cc/100?img=14",
-                        username: "code_master",
-                        name: "Code Master • Following",
-                    },
-                ]}
-            />
         </div>
     );
 }
