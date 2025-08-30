@@ -22,7 +22,7 @@ export default function Conversations() {
     ];
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full pb-10 md:pb-0">
             {/* Header */}
             <div className="px-5 py-4 border-b border-gray-400/30 flex items-center justify-between">
                 <div className="flex items-center gap-3">

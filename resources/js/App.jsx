@@ -4,6 +4,7 @@ import Signup from "./pages/auth/Signup";
 import Feed from "./pages/home/Feed";
 import Explore from "./pages/home/Explore";
 import Messages from "./pages/messages/Messages";
+import Profile from "./pages/profile/Profile";
 import React from "react";
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
                 <Route path="/feed" element={<Feed />} />
                 <Route path="/explore" element={<Explore />} />
                 <Route path="/messages" element={<Messages />} />
+                <Route path="/profile" element={<Profile />} />
             </Routes>
         </BrowserRouter>
     );

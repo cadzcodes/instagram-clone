@@ -45,7 +45,7 @@ export default function Posts() {
                 <div
                     key={post.id}
                     className="
-    bg-black border border-gray-800 rounded-lg
+    bg-black border-b border-gray-800 rounded-lg
     w-full sm:max-w-[500px] mx-0 sm:mx-auto
   "
                 >
@@ -100,7 +100,7 @@ export default function Posts() {
                     </div>
 
                     {/* Add Comment Input */}
-                    <div className="border-t border-gray-800 flex items-center px-3 py-2">
+                    <div className=" flex items-center px-3 py-2">
                         <input
                             type="text"
                             placeholder="Add a comment..."

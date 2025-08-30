@@ -33,18 +33,14 @@ export default function Sidebar({ forceTablet }) {
     const popupRef = useRef(null);
     const navigate = useNavigate();
 
-    // 🔹 Detect mobile (<= 765px). If mobile, we won't force tablet.
+    // 🔹 Detect mobile (<= 765px)
     const [isMobile, setIsMobile] = useState(false);
     useEffect(() => {
-        // use matchMedia to get initial and reactive value
         const mql = window.matchMedia("(max-width: 765px)");
         const onChange = (e) => setIsMobile(e.matches);
-        // set initial
         setIsMobile(mql.matches);
-        // subscribe
         if (mql.addEventListener) mql.addEventListener("change", onChange);
-        else mql.addListener(onChange); // Safari fallback
-        // cleanup
+        else mql.addListener(onChange);
         return () => {
             if (mql.removeEventListener)
                 mql.removeEventListener("change", onChange);
@@ -52,7 +48,7 @@ export default function Sidebar({ forceTablet }) {
         };
     }, []);
 
-    // ✅ Only force tablet when NOT mobile
+    // ✅ Force tablet when specified and not mobile
     const shouldForceTablet = Boolean(forceTablet && !isMobile);
 
     const mainMenu = [
@@ -164,11 +160,10 @@ export default function Sidebar({ forceTablet }) {
         z-40
     `;
 
-        // 🔧 If shouldForceTablet -> show collapsed always (even ≥1260px)
-        // Else use normal responsive behavior (hidden on mobile, tablet collapsed, desktop expanded)
+        // Show desktop sidebar on md+ screens, force tablet mode when specified
         const responsiveClasses = shouldForceTablet
-            ? "flex w-20"
-            : "hidden min-[766px]:flex max-[1259px]:w-20 min-[1260px]:w-64";
+            ? "hidden md:flex w-20"
+            : "hidden md:flex md:w-20 lg:w-64";
 
         return (
             <aside className={`${responsiveClasses} ${baseClasses}`}>
@@ -177,7 +172,7 @@ export default function Sidebar({ forceTablet }) {
                     className={`flex ${
                         shouldForceTablet
                             ? "justify-center"
-                            : "justify-center min-[1260px]:justify-start"
+                            : "justify-center lg:justify-start"
                     } mb-6`}
                 >
                     {shouldForceTablet ? (
@@ -187,9 +182,9 @@ export default function Sidebar({ forceTablet }) {
                             <img
                                 src="/images/instagram-text.png"
                                 alt="Instagram"
-                                className="hidden min-[1260px]:block w-28 mt-2 ml-2"
+                                className="hidden lg:block w-28 mt-2 ml-2"
                             />
-                            <FaInstagram className="block min-[1260px]:hidden w-8 h-8 text-white" />
+                            <FaInstagram className="block lg:hidden w-8 h-8 text-white" />
                         </>
                     )}
                 </div>
@@ -202,9 +197,9 @@ export default function Sidebar({ forceTablet }) {
                         ${
                             shouldForceTablet
                                 ? "justify-center"
-                                : "justify-center min-[1260px]:justify-start"
+                                : "justify-center lg:justify-start"
                         } 
-                        gap-0 ${shouldForceTablet ? "" : "min-[1260px]:gap-4"} 
+                        gap-0 ${shouldForceTablet ? "" : "lg:gap-4"} 
                         px-3 py-3 rounded-lg 
                         transition-colors duration-300 
                         hover:bg-zinc-800/60
@@ -224,7 +219,7 @@ export default function Sidebar({ forceTablet }) {
                                     className={`${
                                         shouldForceTablet
                                             ? "hidden"
-                                            : "hidden min-[1260px]:inline"
+                                            : "hidden lg:inline"
                                     } font-medium ml-2`}
                                 >
                                     {item.name}
@@ -273,9 +268,9 @@ export default function Sidebar({ forceTablet }) {
                         ${
                             shouldForceTablet
                                 ? "justify-center"
-                                : "justify-center min-[1260px]:justify-start"
+                                : "justify-center lg:justify-start"
                         } 
-                        gap-0 ${shouldForceTablet ? "" : "min-[1260px]:gap-4"} 
+                        gap-0 ${shouldForceTablet ? "" : "lg:gap-4"} 
                         px-3 py-3 rounded-lg 
                         transition hover:bg-zinc-800 w-full
                     `;
@@ -308,7 +303,7 @@ export default function Sidebar({ forceTablet }) {
                                         className={`${
                                             shouldForceTablet
                                                 ? "hidden"
-                                                : "hidden min-[1260px]:inline"
+                                                : "hidden lg:inline"
                                         } ml-2 ${
                                             isActive
                                                 ? "font-bold"
@@ -339,7 +334,7 @@ export default function Sidebar({ forceTablet }) {
 
                     {/* Footer is hidden when tablet is forced */}
                     {!shouldForceTablet && (
-                        <div className="hidden min-[1260px]:block text-xs text-gray-400 mt-6 space-y-1">
+                        <div className="hidden lg:block text-xs text-gray-400 mt-6 space-y-1">
                             <p>© 2025 Instagram-Clone by Cadz</p>
                         </div>
                     )}
@@ -355,7 +350,7 @@ export default function Sidebar({ forceTablet }) {
         );
 
         return (
-            <nav className="fixed bottom-0 left-0 w-full bg-black border-t border-gray-500/40 flex justify-around items-center py-2 max-[765px]:flex hidden z-50">
+            <nav className="fixed bottom-0 left-0 w-full bg-black border-t border-gray-500/40 flex justify-around items-center py-2 md:hidden z-50">
                 {mobileMenu.map((item, idx) => {
                     const content = (
                         <div className="relative flex flex-col items-center">
