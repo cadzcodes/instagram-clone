@@ -198,7 +198,7 @@ export default function Sidebar({ forceTablet }) {
                 <div className="space-y-2">
                     {mainMenu.map((item, idx) => {
                         const commonClasses = `
-                        flex items-center 
+                        flex items-center active:scale-95
                         ${
                             shouldForceTablet
                                 ? "justify-center"
